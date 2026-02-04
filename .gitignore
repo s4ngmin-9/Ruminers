@@ -1,0 +1,17 @@
+# 가상환경
+venv/
+.venv/
+env/
+
+# 환경 변수 및 설정
+.env
+*.env
+.vscode/
+.idea/
+
+# 파이썬 캐시
+__pycache__/
+*.py[cod]
+
+# 맥 시스템 파일
+.DS_Store

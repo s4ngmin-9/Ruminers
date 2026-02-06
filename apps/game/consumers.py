@@ -2,7 +2,7 @@ import json
 import uuid
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .room_manager import RoomManager
+from .state.room_manager import RoomManager
 
 
 class GameConsumer(AsyncWebsocketConsumer):

@@ -1,3 +1,4 @@
+from .room_state import RoomState
 from collections import defaultdict
 from threading import Lock
 
@@ -30,7 +31,3 @@ class RoomManager:
     def remove_room(self, room_id):
         with self.room_lock[room_id]:
             self.rooms.pop(room_id, None)
-
-
-# 아래에서 정의
-from .room_state import RoomState

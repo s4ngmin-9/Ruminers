@@ -1,5 +1,6 @@
 import random
 from .tile import Tile, Color
+from dataclasses import dataclass
 
 
 class TileDeck:
@@ -23,3 +24,9 @@ class TileDeck:
         if not self.tiles:
             return None
         return self.tiles.pop()
+
+    @dataclass(frozen=True)
+    class Tile:
+        tile_id: int
+        number: int
+        color: str  # RED / BLUE / BLACK / YELLOW

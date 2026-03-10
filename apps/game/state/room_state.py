@@ -92,6 +92,10 @@ class RoomState:
 
         tile = self.deck.pop()
         player.hand_tiles.append(tile)
+
+        # 타일 뽑으면 턴 종료
+        self.turn_index = (self.turn_index + 1) % len(self.players)
+
         return tile
 
     # 스냅샷

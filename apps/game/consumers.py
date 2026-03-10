@@ -15,9 +15,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.manager = RoomManager.instance()
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
+
         await self.accept()
 
     async def disconnect(self, close_code):
+        await self.leave_room()
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data):
@@ -27,6 +29,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         try:
             if event == "join":
                 snapshot = await self.join_room()
+                await self.broadcast(snapshot)
+
+            elif event == "draw":
+                snapshot = await self.draw_tile()
                 await self.broadcast(snapshot)
 
             elif event == "end_turn":
@@ -39,16 +45,34 @@ class GameConsumer(AsyncWebsocketConsumer):
                     json.dumps({"type": "room_update", "payload": snapshot})
                 )
 
-            else:
-                return
-
         except Exception as e:
             await self.send(json.dumps({"error": str(e)}))
 
+    # 게임 방 로직
     @sync_to_async
     def join_room(self):
         room = self.manager.create_room(self.room_id)
         room.add_player(self.user_id)
+
+        # 2명 이상이면 자동 시작
+        if not room.started and len(room.players) >= 2:
+            room.start()
+
+        return room.snapshot()
+
+    @sync_to_async
+    def leave_room(self):
+        room = self.manager.get_room(self.room_id)
+        if room:
+            room.remove_player(self.user_id)
+
+    @sync_to_async
+    def draw_tile(self):
+        room = self.manager.get_room(self.room_id)
+        if not room:
+            raise ValueError("room not found")
+
+        room.draw_tile(self.user_id)
         return room.snapshot()
 
     @sync_to_async

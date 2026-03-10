@@ -1,11 +1,5 @@
 from apps.game.domain.deck import build_deck
-
-
-class PlayerState:
-    def __init__(self, user_id):
-        self.user_id = user_id
-        self.hand_tiles = []
-        self.score = 0
+from .player_state import PlayerState
 
 
 class RoomState:

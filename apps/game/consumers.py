@@ -23,6 +23,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data):
+        print("RECEIVED:", text_data)
+
         data = json.loads(text_data)
         event = data.get("type")
 
@@ -31,7 +33,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                 snapshot = await self.join_room()
                 await self.broadcast(snapshot)
 
-            elif event == "draw":
+            elif event == "start":
+                snapshot = await self.start_game()
+                await self.broadcast(snapshot)
+
+            elif event == "draw_tile":
                 snapshot = await self.draw_tile()
                 await self.broadcast(snapshot)
 
@@ -54,8 +60,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         room = self.manager.create_room(self.room_id)
         room.add_player(self.user_id)
 
-        # 2명 이상이면 자동 시작
+        print("players:", len(room.players))  # 확인용
+
         if not room.started and len(room.players) >= 2:
+            print("GAME START")  # 확인용
             room.start()
 
         return room.snapshot()
